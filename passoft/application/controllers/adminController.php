@@ -236,6 +236,39 @@ class AdminController extends CI_Controller{
 		$data['mainContent'] = 'daybook';
 		$this->load->view("includes/mainContent", $data);
 	}
+	function daybook_out(){
+		$data['pageTitle'] = 'DayBook Section';
+		$data['smallTitle'] = 'DayBook';
+		$data['mainPage'] = 'DayBook';
+		$data['subPage'] = 'DayBook';
+		$data['title'] = 'DayBook';
+		$data['headerCss'] = 'headerCss/stockCss';
+		$data['footerJs'] = 'footerJs/stockJs';
+		$data['mainContent'] = 'Branch/daybook_out';
+		$this->load->view("includes/mainContent", $data);
+	} 
+	function daybook_in(){
+		// $data['sender_uname'] = $this->input->post('uname');
+		$data['pageTitle'] = 'DayBook Section';
+		$data['smallTitle'] = 'DayBook';
+		$data['mainPage'] = 'DayBook';
+		$data['subPage'] = 'DayBook';
+		$data['title'] = 'DayBook';
+		$data['headerCss'] = 'headerCss/stockCss';
+		$data['footerJs'] = 'footerJs/stockJs';
+		$data['mainContent'] = 'Branch/daybook_in';
+		$this->load->view("includes/mainContent", $data);
+	} 
+	function indaybook_record()
+	{
+		$data['sender_uname'] = $this->input->post('uname');
+		$this->load->view("Branch/in_daybook_record", $data);
+	}
+	function outdaybook_record()
+	{
+		$data['reciver_uname'] = $this->input->post('uname');
+		$this->load->view("Branch/out_daybook_record", $data);
+	}
 	
 		function admin_pay_recieve()
 		{
@@ -1318,8 +1351,7 @@ public function showotherlist(){
     
      $photo_name1 = time().trim($img);
     	$asset_name=$this->db->get("upload_asset")->row()->asset_name;
-				$image_path=$asset_name.'/images/people';
-
+		$image_path=$asset_name.'/images/people';
         $config['upload_path'] = $image_path;
         $config['allowed_types'] = 'jpg|jpeg|png';
         $config['max_size'] = '5120';
@@ -1615,5 +1647,12 @@ window.location.href="<?php echo base_url();?>adminController/upload_image";
         $data['mainContent'] = 'export_test';
         $this->load->view("includes/mainContent", $data);
  }
+ public function  payment_record()
+	{
+
+		$data['username'] = $this->input->post('uname');
+		// print_r($data);
+		$this->load->view("Shop/payment_record", $data);
+	}
 
 }

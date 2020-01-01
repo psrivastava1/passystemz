@@ -73,11 +73,11 @@
                                         
                                     
                                   });
-                                  $('#subsnm').change(function(){
-                                      var subsnumber =$('#subsnm').val();
+                                  $('#subs').change(function(){
+                                      var subsnumber =$('#subs').val();
                                       
                                        $.post("<?= site_url();?>index.php/stockController/checkuser" , { subsnumber : subsnumber } , function(data){
-                                          
+                                           alert(data);
                                            if(data=="tt"){
                                            $('#num').show();
                                            }else{
@@ -97,7 +97,6 @@
                                           $('#num').show();
                                     }
                                     else{
-                                        alert("Fill Correct Order Number");
                                         $('#num').hide(); 
                                     }
                                         
@@ -107,18 +106,15 @@
                                   $('#rows').change(function(data){
                                      var numrow= $('#rows').val();
                                      if($('#directsale').is(':checked')){
-                                      var comm = $('#subsnm').val();
-                                    //   alert(comm);
+                                         alert("kkk");
                                      }
-                                     else if($('#online').is(':checked')){
-                                         var comm = $('#orderno').val();
-                                    //   alert(comm);
-
+                                     else{
+                                         alert("bbbb");
                                      }
-                                    //  alert(comm);
+                                     alert(numrow);
                                     
-                                   
-                                      $.post("<?= site_url();?>index.php/stockController/direct" , { numrow : numrow , comm : comm } , function(data){
+                                      $('#directrows').show();
+                                      $.post("<?= site_url();?>index.php/stockController/direct" , { numrow : numrow } , function(data){
                                            $('#directrows').show();
                                             $('#directrows').html(data);
                                       });

@@ -523,9 +523,9 @@ public function shopshowdemandlist()
 	    
 
       }
-        public function recieveproductlist(){
-	   $data['invoice']=$this->uri->segment(3);
-      	$data['pageTitle'] = 'Received Product List';
+  public function recieveproductlist(){
+	  $data['invoice']=$this->uri->segment(3);
+    $data['pageTitle'] = 'Received Product List';
 		$data['smallTitle'] = ' Received Product List';
 		$data['mainPage'] = ' Received Product List';
 		$data['subPage'] = ' Received Product List';
@@ -1122,7 +1122,7 @@ public function invoice(){
 		$value['ifsc'] = $this->input->post('ifsc');
 		$value['image'] = time().trim($_FILES['image']['name']);
 		$value['status']= 0;
-		$photo_name1=time().trim($_FILES['image']['name']);
+		$photo_name1=time().str_replace(" ","",$_FILES['image']['name']);
 		$tablename='sub_branch';
 		$sb=$this->shop->insertsub($tablename,$value);
 		if($sb)
@@ -1322,6 +1322,39 @@ public function invoice(){
 		$data['footerJs'] = 'footerJs/daybookJs';
 		$data['mainContent'] = 'Shop/dayBook';
 		$this->load->view("includes/mainContent", $data);
+  }
+  function daybook_out(){
+		$data['pageTitle'] = 'DayBook Section';
+		$data['smallTitle'] = 'DayBook';
+		$data['mainPage'] = 'DayBook';
+		$data['subPage'] = 'DayBook';
+		$data['title'] = 'DayBook';
+		$data['headerCss'] = 'headerCss/stockCss';
+		$data['footerJs'] = 'footerJs/stockJs';
+		$data['mainContent'] = 'Branch/daybook_out';
+		$this->load->view("includes/mainContent", $data);
+	} 
+	function daybook_in(){
+		// $data['sender_uname'] = $this->input->post('uname');
+		$data['pageTitle'] = 'DayBook Section';
+		$data['smallTitle'] = 'DayBook';
+		$data['mainPage'] = 'DayBook';
+		$data['subPage'] = 'DayBook';
+		$data['title'] = 'DayBook';
+		$data['headerCss'] = 'headerCss/stockCss';
+		$data['footerJs'] = 'footerJs/stockJs';
+		$data['mainContent'] = 'Branch/daybook_in';
+		$this->load->view("includes/mainContent", $data);
+	} 
+	function indaybook_record()
+	{
+		$data['sender_uname'] = $this->input->post('uname');
+		$this->load->view("Branch/in_daybook_record", $data);
+  }
+  function outdaybook_record()
+	{
+		$data['reciver_uname'] = $this->input->post('uname');
+		$this->load->view("Branch/out_daybook_record", $data);
 	}
 	function cashPayment(){
 		$data['pageTitle'] = 'Accounting';
@@ -1396,7 +1429,7 @@ public function invoice(){
 	}
 	public function pay_and_receive(){
 	   //  $data['invoice']=$this->uri->segment(3);
-	     	$data['pageTitle'] = 'Product Receive And Pay';
+	    $data['pageTitle'] = 'Product Receive And Pay';
 		$data['smallTitle'] = 'Product Receive And Pay';
 		$data['mainPage'] = 'Product Receive And Pay ';
 		$data['subPage'] = 'Product Receive And Pay';
@@ -1407,7 +1440,100 @@ public function invoice(){
 		$this->load->view("includes/mainContent", $data);
 	     
 	}
-	
+	public function pay_others()
+	{
+		$data['pageTitle'] = 'Pay To Admin Or Branch';
+		$data['smallTitle'] = 'Pay To Admin Or Branch';
+		$data['mainPage'] = 'Pay To Admin Or Branch';
+		$data['subPage'] = 'Pay To Admin Or Branch';
+		$data['title'] = 'Pay To Admin Or Branch';
+		$data['headerCss'] = 'headerCss/stockCss';
+		$data['footerJs'] = 'footerJs/stockJs';
+		$data['mainContent'] = 'Shop/pay_other';
+		$this->load->view("includes/mainContent", $data);
+	}
+	public function pay_amt_to()
+	{
+		$data['amount'] = $this->input->post('amt');
+		$data['pay_type'] = $this->input->post('pay_type');
+		$data['date'] = $this->input->post('pay_date');
+		$data['pay_to'] = $this->input->post('pay_to');
+		$data['paid_by'] = $this->session->userdata('username');
+		$data['sender_status'] = "1";
+		$int = $this->db->insert("payment_details",$data);
+		if($int)
+		{
+			echo "1";
+		}
+		else
+		{
+			echo "0";
+		}
+	}
+	public function  payment_record()
+	{
+
+		$data['username'] = $this->input->post('uname');
+		// print_r($data);
+		$this->load->view("Shop/payment_record", $data);
+	}
+	public function add_details()
+	{
+		$data['pageTitle'] = 'Add QR Code';
+		$data['smallTitle'] = 'Add QR Code Image';
+		$data['mainPage'] = 'Add QR Code Image';
+		$data['subPage'] = 'Add QR Code Image';
+		$data['title'] = 'Add QR Code Image';
+		$data['headerCss'] = 'headerCss/stockCss';
+		$data['footerJs'] = 'footerJs/stockJs';
+		$data['mainContent'] = 'Shop/add_details';
+		$this->load->view("includes/mainContent", $data);
+	}
+	public function save_qr_details()
+	{
+		$val['username']= $this->session->userdata('username');
+		$val['type']= $this->input->post("qr_type");
+		$val['image'] = str_replace(' ','',$_FILES['img_1']['name']);
+		$config['upload_path'] = $this->db->get('upload_asset')->row()->asset_name.'/images/Qr_code';
+		//print_r($config['upload_path']); //exit;
+		$config['allowed_types'] = 'jpg|png|jpeg';
+		$config['max_size'] = '5120';
+		$config['file_name']= str_replace(' ','',$_FILES['img_1']['name']);
+		if(!empty($_FILES['img_1']['name']))
+		{
+			$this->upload->initialize($config);
+			if($this->upload->do_upload('img_1'))
+			{
+				$chkk = $this->db->insert('bank_qr_details',$val);
+				if($chkk)
+				{
+					echo "Upload Successfully";
+				}
+				else
+				{
+					echo "Data Not Inserted";
+				}
+			}
+			else
+			{
+				echo "Image Not Uploaded";
+			}
+		}
+	}
+	function dlt_img()
+	{
+		$r_id = $this->input->post("r_id");
+		$this->db->where('id',$r_id);
+		$dlt = $this->db->delete('bank_qr_details');
+		if($dlt)
+		{
+			echo "1";
+		}
+		else
+		{
+			echo "0";
+		}
+	}
 	public function pay_order()
  	{ 
  	   

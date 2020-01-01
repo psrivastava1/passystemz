@@ -62,7 +62,7 @@
                 <script>
                     $("#dltt<?php echo $j;?>").click(function(){
                         var dlt_id = $("#dlt_id<?php echo $j;?>").val();
-                        alert(dlt_id);
+                        // alert(dlt_id);
                         $.post("<?php echo site_url();?>stockController/delete_tranfr_pro",{dlt_id:dlt_id},function(data){
                             alert(data);
                             $("#transfer_p").load(location.href+" #transfer_p>","");

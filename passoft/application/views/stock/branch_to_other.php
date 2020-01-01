@@ -103,8 +103,8 @@
                                         var send_qty = $("#sendquantity<?php echo $i;?>").val();
                                         var pcode = $("#pcode<?php echo $i;?>").val();
                                         // alert(receiver_id);
-                                        alert(send_qty);
-                                        alert(pcode);
+                                        // alert(send_qty);
+                                        // alert(pcode);
                                         if(send_qty>0 && pcode.length>0 )
                                         {
                                              $.post("<?php echo site_url();?>stockController/transfer_pro",{t:t,send_qty:send_qty,pcode:pcode},function(data){

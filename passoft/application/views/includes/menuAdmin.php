@@ -425,20 +425,32 @@
             <a href="<?php echo base_url(); ?>adminController/dayBook">
                Day Book<i class="icon-arrow"></i>
             </a>
-
-                </li>
-                <li>
+        </li>
+        <li>
             <a href="<?php echo base_url(); ?>adminController/pvdayBook">
               Pv Day Book<i class="icon-arrow"></i>
             </a>
-
-                </li>
-            <!--    <li>-->
-            <!--<a href="<?php echo base_url(); ?>shopController/cashPayment">-->
-            <!--  Transaction <i class="icon-arrow"></i>-->
-            <!--</a>-->
-
-            <!--</li>-->
+        </li>
+        <li>
+            <a href="<?php echo base_url(); ?>index.php/adminController/daybook_out">
+                DayBook OUT<i class="icon-arrow"></i>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo base_url(); ?>index.php/adminController/daybook_in">
+                DayBook IN<i class="icon-arrow"></i>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo base_url(); ?>index.php/branchController/pay_others">
+                Pay To Branch & Shop<i class="icon-arrow"></i>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo base_url(); ?>index.php/branchController/add_details">
+                Add Your QR & Bank QR Image <i class="icon-arrow"></i>
+            </a>
+        </li>
       </ul>
     </li>
 
@@ -606,7 +618,7 @@
         </li>
 
         <li>
-            <a href="<?php echo base_url(); ?>index.php/branchController/branchstocklist">
+            <a href="<?php echo base_url(); ?>index.php/stockController/stocklist">
             Branch Stock Product List <i class="icon-arrow"></i>
             </a>
         </li>
@@ -711,6 +723,26 @@
                 DayBook <i class="icon-arrow"></i>
             </a>
         </li>
+        <li>
+            <a href="<?php echo base_url(); ?>index.php/branchController/daybook_out">
+                DayBook OUT<i class="icon-arrow"></i>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo base_url(); ?>index.php/branchController/daybook_in">
+                DayBook IN<i class="icon-arrow"></i>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo base_url(); ?>index.php/branchController/pay_others">
+                Pay To Admin & Shop<i class="icon-arrow"></i>
+            </a>
+        </li>
+        <li>
+            <a href="<?php echo base_url(); ?>index.php/branchController/add_details">
+                Add Your QR & Bank QR Image <i class="icon-arrow"></i>
+            </a>
+        </li>	
     </ul>
 </li>
         <li>
@@ -881,7 +913,26 @@
 					<a href="<?php echo base_url();?>shopController/dayBook">Daybook<i class="icon-arrow"></i>
 					</a>
 				</li>
-				
+                <li>
+                    <a href="<?php echo base_url(); ?>index.php/shopController/daybook_out">
+                        DayBook OUT<i class="icon-arrow"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url(); ?>index.php/shopController/daybook_in">
+                        DayBook IN<i class="icon-arrow"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url(); ?>index.php/shopController/pay_others">
+                        Pay To Admin & Branch<i class="icon-arrow"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?php echo base_url(); ?>index.php/shopController/add_details">
+                        Add Your QR & Bank QR Image <i class="icon-arrow"></i>
+                    </a>
+                </li>				
 			</ul>
        </li>
    </ul>

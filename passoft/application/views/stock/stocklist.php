@@ -79,8 +79,8 @@
                                             <th style="width:20px;">P Code</th>
                                         <th style="width:20px;">Price</th>
                                         <th style="width:8px;">Qty</th>
-                                        <th style="width:30px;">Image1</th>
-                                        <th style="width:30px;">Image2</th>
+                                        <!-- <th style="width:30px;">Image1</th>
+                                        <th style="width:30px;">Image2</th> -->
                                          <?php if($this->session->userdata("login_type")==1) { ?>
                                          <th style="width:100px;">Action</th>
                                        <?php   } ?>
@@ -132,12 +132,12 @@
                                         } elseif($this->session->userdata('login_type')==4){
                                              echo $row1->rec_quantity;
                                         }?></td>
-                                        <td><a href="<?php echo base_url();?>stockController/editstockitem/<?php echo $row->id;?>">
-                                            <img src="<?php echo $this->config->item('asset_url'). '/productimg/' . $row->file1; ?>"
-                                                style="height:50px;width:50px;" class="zoom1"></a></td>
-                                        <td><a href="<?php echo base_url();?>stockController/editstockitem/<?php echo $row->id;?>">
-                                            <img src="<?php echo $this->config->item('asset_url'). '/productimg/' . $row->file2; ?>"
-                                                style="height:50px;width:50px;" class="zoom1"></a></td>
+                                       <!-- <td><a href="<?php //echo base_url();?>stockController/editstockitem/<?php //echo $row->id;?>"> -->
+                                            <!-- <img src="<?php //echo $this->config->item('asset_url'). '/productimg/' . $row->file1; ?>" -->
+                                                <!-- style="height:50px;width:50px;" class="zoom1"></a></td> -->
+                                        <!-- <td>< a href="<?php //echo base_url();?>stockController/editstockitem/<?php //echo $row->id;?>"> -->
+                                            <!-- <img src="<?php //echo $this->config->item('asset_url'). '/productimg/' . $row->file2; ?>" -->
+                                                <!-- style="height:50px;width:50px;" class="zoom1"></a></td> -->
                                         <?php if($this->session->userdata("login_type")==1) { ?>
                                         <td><button id="delete<?php echo $i; ?>" class="btn btn-warning"><i class="fa fa-trash-o" style="font-size:18px; color:red;"></i></button></td>
                                     <?php   } ?>

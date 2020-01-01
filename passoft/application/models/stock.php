@@ -28,8 +28,7 @@ class stock extends CI_Model{
 public function checkStockp($itemNo){
     
    $sid= $this->session->userdata("id");
-    //  print_r($sid);
-    //  exit;
+    // print_r($sid);
 	$this->db->where("subbranch_id",$sid);
 	$this->db->where("sec",$itemNo);
 //	$this->db->where("hsn",$itemNo);

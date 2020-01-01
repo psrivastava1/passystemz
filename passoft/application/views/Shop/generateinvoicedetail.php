@@ -242,10 +242,9 @@ function myFunction() {
                                         <tr class="thead-default">
                                             <th style="width:5px;">S.No</th>
                                             <th>Description</th>
-                                            <th>volume</th>
                                             <th>Quantity</th>
-                                            <th>Rate</th>
                                             <th>Amount</th>
+                                            <th>Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -266,7 +265,6 @@ function myFunction() {
                                                 <h6><?php echo $productdetail->name;?></h6>
                                                 <p><?php  echo $productdetail->company ."[ ". $productdetail->p_type . " ] ";?></p>
                                             </td>
-                                            <td><?= $productdetail->size; ?></td>
                                             <td><?php echo $data->quantity; ?></td>
                                             <td><?php echo $productdetail->selling_price; ?></td>
                                             <td><?php echo $data->subtotal; ?></td>

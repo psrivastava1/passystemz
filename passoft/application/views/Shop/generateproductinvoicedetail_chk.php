@@ -1,7 +1,59 @@
+<?php if($this->session->userdata("login_type")==1) 
+{ 
+    $this->db->where('username',$this->uri->segment(4));
+    $chkk = $this->db->get('branch');
+    if($chkk->num_rows()>0)
+    {
+        $snd_data = $chkk->row();
+    }
+    else
+    {
+        $this->db->where('username',$this->uri->segment(4));
+        $chkk1 = $this->db->get('sub_branch');
+        if($chkk1->num_rows()>0)
+        {
+            $snd_data = $chkk1->row();
+        }
+    }
+} elseif($this->session->userdata("login_type")==2) 
+{
+    $this->db->where('username',$this->uri->segment(4));
+    $chkk = $this->db->get('sub_branch');
+    if($chkk->num_rows()>0)
+    {
+        $snd_data = $chkk->row();
+    }
+    else
+    {
+        $this->db->where('admin_username',$this->uri->segment(4));
+        $chkk1 = $this->db->get('general_settings');
+        if($chkk1->num_rows()>0)
+        {
+            $snd_data = $chkk1->row();
+        }
+    }
+} elseif($this->session->userdata("login_type")==4) 
+{ 
+    $this->db->where('username',$this->uri->segment(4));
+    $chkk = $this->db->get('branch');
+    if($chkk->num_rows()>0)
+    {
+        $snd_data = $chkk->row();
+    }
+    else
+    {
+        $this->db->where('admin_username',$this->uri->segment(4));
+        $chkk1 = $this->db->get('general_settings');
+        if($chkk1->num_rows()>0)
+        {
+            $snd_data = $chkk1->row();
+        }
+    }
+}?>
+			
 <!DOCTYPE html>
 <html lang="en">
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
-
 
 <head>
   <title><?php echo $title ?></title>
@@ -58,8 +110,7 @@ function myFunction() {
     body * {
       visibility: hidden;
     }
-    
-    
+
     #printcontent * {
       visibility: visible;
     }
@@ -71,10 +122,7 @@ function myFunction() {
     }
   }
   </style>
-  
   <body>
-
-
 <div  id="printcontent">
     <!-- Container-fluid starts -->
     <div class="container">
@@ -91,12 +139,12 @@ function myFunction() {
                                     <tbody>
                                         <tr >
                                             <td>
-                                                 <img src="<?php echo $this->config->item('asset_url')?>/images/newwlogo.png"
-                                             class="m-b-10" alt="Theme-Logo" style="max-height:70px;max-width:100px;">  </td>
+                                                <img src="<?php echo $this->config->item('asset_url')?>/images/logo.png"
+                                             class="m-b-10" alt="Theme-Logo" style="max-height:70px;max-width:100px;">
+                                              </td>
                                         </tr>
                                         <tr>
                                             <td>Company Name :-<strong>Pass System </strong> </td>
-
 
                                         </tr>
                                         <tr>
@@ -123,87 +171,79 @@ function myFunction() {
                 </div>
                 <div class="card-block">
                     <div class="row invoive-info">
-                        <div class="col-md-4 col-xs-12 invoice-client-info">
-                            <h6>Client Information :</h6>
-														<?php
-													
-													$id = $this->uri->segment(3);
-
-
-													$this->db->where("bill_no",$id);
-													$saletot=$this->db->get("product_saletotal")->row();
-													// $saletot=mysqli_query($this->db->conn_id,"select * from  product_saletotal where bill_no = '$id'");
-													// $saletotdt=mysqli_fetch_object($saletot);
-												//	print_r($saletot);
-													$valid_id = $saletot->valid_id;
-
-													$this->db->where("bill_no",$id);
-													$rowb=$this->db->get("product_sale")->row();
-
-													// $sqlb=mysqli_query($this->db->conn_id,"select * from  product_sale where bill_no = '$id'");
-													// $rowb=mysqli_fetch_object($sqlb);
-												//	print_r($rowb);
-													$category = $rowb->category;
-													// $valid_id = $rowb->valid_id;
-													$p_name = $rowb->p_name;
-
-													
-														$this->db->where("username",$valid_id);
-														$custdetail=$this->db->get("customers")->row();
-														
-														// $sqlc=mysqli_query($this->db->conn_id,"select * from customers where username='$valid_id' ");
-														// $custdetail=mysqli_fetch_object($sqlc);
-														// print_r($sqlc);
-																												?>
-                            <h6 class="m-0">Name :<span class="text-primary text-uppercase"> <?php echo $custdetail->name;?></span></h6>
-                            <h6 class="m-0 m-t-10">Address:<span class="text-primary text-uppercase"> <?php echo $custdetail->address;?></span></p>
-                            <h6 class="m-0">Mobile Number:<span class="text-primary text-uppercase"> <?php echo $custdetail->mobile;?></span></p>
-                          
-                        </div>
-                        <div class="col-md-4 col-sm-6">
-                            <h6>Order Information :</h6>
-                             <table class="table table-responsive invoice-table invoice-order table-borderless">
-                                <tbody>
-                                    
-                                    <tr>
-                                        <th>Payment Status:</th>
-                                        <td>
-                                            <span class="label label-warning">Paid</span>
-                                        </td>
-                                    </tr>
-                                    <!-- <tr>
-                                        <th>Subscriber Order Id :</th>
-                                        <td>
-                                         <span class="label label-danger"><?php//  echo $custusr->order_no; ;?></span>
-                                        </td>
-                                    </tr> -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="col-md-4 col-sm-6">
-                            <h6 class="m-b-20">Invoice Number : <span><?php echo $id;?></span></h6>
+                         <div class="col-md-4 col-sm-6">
+                            <h6 class="m-b-20">Invoice Number : <span class="text-primary" style="font-size:30px;"><?php echo $invoice;?></span></h6>
                              <?php 
-                             $this->db->select_sum('item_quant');
-                             $this->db->select_sum('sub_total');
-                           //  $this->db->where('order_no',$custusr->order_no);
-                             $this->db->where('bill_no',$id);
-                            // $this->db->where('date',$custusr->order_date);
-                             $dt1= $this->db->get("product_sale")->row();
+                           //  $this->db->select_sum('quantity');
+                           //  $this->db->select_sum('subtotal');
+                             $this->db->where('invoice_number',$invoice);
+                            
+                             $dt1= $this->db->get("product_trans_detail")->row();
                            ?>
-                     <!--  <td><?php echo $dt1->quantity;?></td>
-                      <td></td> -->
-                            <h6 class="text-uppercase text-primary">Total Amount:
-                                <span><?php echo $saletot->paid;?></span>
-                            </h6>
-                            
-                             <h6 class="text-uppercase">Payment Mode:<span  class="text-uppercase text-primary">
-                                 Cash</span>
-                            </h6>
-                            
-                                  
+                      
                         </div>
-                 
+                       <div class="col-md-4 col-sm-6"> 
+                       <h6 class="m-b-20 ">Sender Detail -<br><br> Username:-<span class="text-primary"><?php if($username=='admin'){ echo $snd_data->admin_username; } else { echo $snd_data->username; } ?></span></h6>
+                            <h6 class="text-uppercase">Name :
+                                <span class=" text-primary"><?php if($username=='admin'){ echo $snd_data->owner_name; } else { echo $snd_data->name; } ?></span>
+                            </h6>
+                            <h6 class="text-uppercase ">Mobile Number :
+                                <span class="text-primary"><?php if($username=='admin'){ echo $snd_data->phone_number; } else { echo $snd_data->mobile; }?></span>
+                            </h6>
+                           
+                        </div>
+                      
                        
+                    <div class="col-md-4 col-sm-6"> 
+                            <h6 class="m-b-20 ">Reciever Detail -<br><br> Username:-<span class="text-primary"><?php echo $dt1->reciver_usernm;?></span></h6>
+                               <?php 
+                              $this->db->where('admin_username',$dt1->reciver_usernm);
+                             $admindt1=$this->db->get('general_settings');
+                             if($admindt1->num_rows()>0){
+                                 $name1=$admindt1->row()->owner_name;
+                                  $mobile1=$admindt1->row()->mobile_number;
+                                  ?>
+                                   <h6 class="text-uppercase">Name :
+                                <span class=" text-primary"><?php echo $name1;?></span>
+                            </h6>
+                          <?php   }
+                          else{
+                              $this->db->where('username',$dt1->reciver_usernm);
+                             $branchdt1=$this->db->get('branch');
+                             if($branchdt1->num_rows()>0){
+                                 $name1=$branchdt1->row()->b_name;
+                                  $mobile1=$branchdt1->row()->mobile; ?>
+                                   <h6 class="text-uppercase">Branch Name :
+                                <span class=" text-primary"><?php echo $name1;?></span>
+                            </h6>
+                             <h6 class="text-uppercase">Branch Owner Name :
+                                <span class=" text-primary"><?php echo $branchdt1->row()->name;?></span>
+                            </h6>
+                          <?php   } 
+                             else{
+                              $this->db->where('username',$dt1->reciver_usernm);
+                             $sbranchdt1=$this->db->get('sub_branch');
+                             if($sbranchdt1->num_rows()>0){
+                                 $name1=$sbranchdt1->row()->bname;
+                                  $mobile1=$sbranchdt1->row()->mob_no; ?>
+                                   <h6 class="text-uppercase">Name :
+                                <span class=" text-primary"><?php echo $name1;?></span>
+                            </h6>
+                             <h6 class="text-uppercase">Name :
+                                <span class=" text-primary"><?php echo $sbranchdt1->row()->ownername;?></span>
+                            </h6>
+                          <?php   }
+                             }
+                          }
+                           ?>
+                             
+                            <h6 class="text-uppercase ">Mobile Number :
+                                <span class="text-primary"><?php echo $mobile1;?></span>
+                            </h6>
+                           
+                        </div>
+                      
+                     
                     </div>
                    
                     </div>
@@ -215,38 +255,37 @@ function myFunction() {
                                         <tr class="thead-default">
                                             <th style="width:5px;">S.No</th>
                                             <th>Description</th>
-                                             <th>Bar Code</th>
-                                              <th>Product Code</th>
                                             <th>Quantity</th>
-											<th>Unit Price</th>
-                                            <th>Amount</th>
-                                          
+                                            <th>Price / Item</th>
+                                            <th>Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
                                              <?php 
-                            $this->db->where("bill_no",$id);
-							$productdt=$this->db->get("product_sale");
-                             
-                                  $i=1; foreach($productdt->result() as $data):?>
+                            
+                            $this->db->where('invoice_number',$invoice);
+                            
+                             $row= $this->db->get("product_trans_detail");
+                                  $i=1; $total=0; foreach($row->result() as $data):?>
                                          <tr class="text-uppercase">
                                             <td><?php echo $i;?></td>
                                             <td>
 
-
-                                                <?php //$this->db->where('hsn',$data->p_code);
-                                                      $this->db->where('sec',$data->p_code);
+                                                <?php
+                                                
+                                                $this->db->where('id',$data->p_code);
+                                                // $this->db->or_where('sec',$data->p_code);
                                                       $productdetail=$this->db->get('stock_products')->row();
+                                                     $amount= $productdetail->selling_price *$data->quantity;
                                                          ?>
                                                 <h6><?php echo $productdetail->name;?></h6>
                                                 <p><?php  echo $productdetail->company ."[ ". $productdetail->p_type . " ] ";?></p>
                                             </td>
-                                             <td><?php echo $productdetail->sec; ?></td>
-                                              <td><?php echo $productdetail->hsn; ?></td>
-                                            <td><?php echo $data->item_quant; ?></td>
-                                            <td><?php echo $data->pries_per_item; ?></td>
-                                            <td><?php echo $data->sub_total; ?></td>
+                                            <td><?php echo $data->quantity; ?></td>
+                                            <td><?php echo $productdetail->selling_price; ?></td>
+                                            <td><?php echo $amount ; ?></td>
+                                            <?php $total =$total + $amount;?>
                                         </tr>
                                         
                                        <?php  $i++;endforeach;?>
@@ -260,12 +299,8 @@ function myFunction() {
                             <table class="table table-responsive invoice-table invoice-total">
                                 <tbody>
                                     <tr>
-                                        <th> Total Amount :</th>
-                                        <td><?php echo $saletot->total;?></td>
-                                    </tr>
-																		<tr>
-                                        <th> Paid Amount :</th>
-                                        <td><?php echo $saletot->paid;?></td>
+                                        <th>Sub Total :</th>
+                                        <td><?php echo $total;?></td>
                                     </tr>
                                     <tr>
                                         <th>Taxes :</th>
@@ -282,7 +317,7 @@ function myFunction() {
                                         </td>
                                         <td>
                                             <hr />
-                                            <h5 class="text-primary"><?php echo $saletot->paid;?></h5>
+                                            <h5 class="text-primary"><?php echo $total;?></h5>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -295,17 +330,14 @@ function myFunction() {
                             <!--<p>Pas System  </p>-->
                         </div>
                     </div>
-                    <center>  <a href="<?php echo base_url();?>shopController/index"  class ="btn btn-info">Done</a></center>
                 </div>
             </div>
-            
             <!-- Invoice card end -->
             
         </div>
     </div>
     <!-- Container ends -->
 </div>
-
 </body>
 <div class="row text-center">
                 <div class="col-sm-12 invoice-btn-group text-center">

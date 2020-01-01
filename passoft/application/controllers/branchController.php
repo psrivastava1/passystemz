@@ -81,7 +81,115 @@ class branchController extends CI_Controller{
 		$data['mainContent'] = 'Branch/daybook';
 		$this->load->view("includes/mainContent", $data);
 	} 
-	
+	function daybook_out(){
+		$data['pageTitle'] = 'DayBook Section';
+		$data['smallTitle'] = 'DayBook';
+		$data['mainPage'] = 'DayBook';
+		$data['subPage'] = 'DayBook';
+		$data['title'] = 'DayBook';
+		$data['headerCss'] = 'headerCss/stockCss';
+		$data['footerJs'] = 'footerJs/stockJs';
+		$data['mainContent'] = 'Branch/daybook_out';
+		$this->load->view("includes/mainContent", $data);
+	} 
+	function daybook_in(){
+		// $data['sender_uname'] = $this->input->post('uname');
+		$data['pageTitle'] = 'DayBook Section';
+		$data['smallTitle'] = 'DayBook';
+		$data['mainPage'] = 'DayBook';
+		$data['subPage'] = 'DayBook';
+		$data['title'] = 'DayBook';
+		$data['headerCss'] = 'headerCss/stockCss';
+		$data['footerJs'] = 'footerJs/stockJs';
+		$data['mainContent'] = 'Branch/daybook_in';
+		$this->load->view("includes/mainContent", $data);
+	} 
+	function indaybook_record()
+	{
+		$data['sender_uname'] = $this->input->post('uname');
+		$this->load->view("Branch/in_daybook_record", $data);
+	}
+	function outdaybook_record()
+	{
+		$data['reciver_uname'] = $this->input->post('uname');
+		$this->load->view("Branch/out_daybook_record", $data);
+	}
+	public function pay_others()
+	{
+		$data['pageTitle'] = 'Pay To Admin Or Shop';
+		$data['smallTitle'] = 'Pay To Admin Or Shop';
+		$data['mainPage'] = 'Pay To Admin Or Shop';
+		$data['subPage'] = 'Pay To Admin Or Shop';
+		$data['title'] = 'Pay To Admin Or Shop';
+		$data['headerCss'] = 'headerCss/stockCss';
+		$data['footerJs'] = 'footerJs/stockJs';
+		$data['mainContent'] = 'Shop/pay_other';
+		$this->load->view("includes/mainContent", $data);
+	}
+	public function  payment_record()
+	{
+
+		$data['username'] = $this->input->post('uname');
+		// print_r($data);
+		$this->load->view("Shop/payment_record", $data);
+	}
+	public function add_details()
+	{
+		$data['pageTitle'] = 'Add QR Code';
+		$data['smallTitle'] = 'Add QR Code Image';
+		$data['mainPage'] = 'Add QR Code Image';
+		$data['subPage'] = 'Add QR Code Image';
+		$data['title'] = 'Add QR Code Image';
+		$data['headerCss'] = 'headerCss/stockCss';
+		$data['footerJs'] = 'footerJs/stockJs';
+		$data['mainContent'] = 'Shop/add_details';
+		$this->load->view("includes/mainContent", $data);
+	}
+	public function save_qr_details()
+	{
+		$val['username']= $this->session->userdata('username');
+		$val['type']= $this->input->post("qr_type");
+		$val['image'] = str_replace(' ','',$_FILES['img_1']['name']);
+		$config['upload_path'] = $this->db->get('upload_asset')->row()->asset_name.'/images/Qr_code';
+		//print_r($config['upload_path']); //exit;
+		$config['allowed_types'] = 'jpg|png|jpeg';
+		$config['max_size'] = '5120';
+		$config['file_name']= str_replace(' ','',$_FILES['img_1']['name']);
+		if(!empty($_FILES['img_1']['name']))
+		{
+			$this->upload->initialize($config);
+			if($this->upload->do_upload('img_1'))
+			{
+				$chkk = $this->db->insert('bank_qr_details',$val);
+				if($chkk)
+				{
+					echo "Upload Successfully";
+				}
+				else
+				{
+					echo "Data Not Inserted";
+				}
+			}
+			else
+			{
+				echo "Image Not Uploaded";
+			}
+		}
+	}
+	function dlt_img()
+	{
+		$r_id = $this->input->post("r_id");
+		$this->db->where('id',$r_id);
+		$dlt = $this->db->delete('bank_qr_details');
+		if($dlt)
+		{
+			echo "1";
+		}
+		else
+		{
+			echo "0";
+		}
+	}
 	function saveBranch(){
 		$maxid=$this->branch->getMax();
 		$maxid=$maxid+1;
@@ -102,7 +210,12 @@ class branchController extends CI_Controller{
 		  {
              $msg = "Dear ". $name . " Your Branch Registration in PAS System is Successfully Done. Your Branch Name is " .$bname . "  and Your Username is ".$username." and Password is ".$passw.". Please Wait For Activation. Best Regards from  PAS System Admin- 7394826066";
               $mobile = $this->input->post('mob_no');
-                  sms($mobile,$msg);
+				  sms($mobile,$msg);
+				  $mbal['username']=$username;
+		          $mbal['balance']=0.00;
+		          $mbal['date']=date("y-m-d");
+
+		          $this->db->insert("m_balance",$mbal);
                   //echo $msg;
              redirect(base_url().'branchController/bregistration/5');
 		            //   // redirect('https://passystem.in/auth/signupShop','refresh');

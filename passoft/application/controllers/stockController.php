@@ -5,7 +5,6 @@
 			$this->is_login();
 			$this->load->model("stock");
 			$this->load->model("branch");
-				$this->load->model("shop");
 	}
 	
 	
@@ -45,8 +44,6 @@
 	}
 	function direct(){
 	    $data['number']=$this->input->post("numrow");
-	     $data['comm']=$this->input->post("comm");
-	    
 	    $this->load->view("direct",$data);
 	}
 	function addCategory(){
@@ -55,305 +52,6 @@
 		//print_r($streamList);
 		$data['streamList'] = $streamList;
 		$this->load->view("ajax/addCategory",$data);
-	}
-	
-	function directsale(){
-	   $ordernumber= str_replace(' ','',$this->input->post("comm"));
-	  
-	  $total= $this->input->post("total");
-	  $number= $this->input->post("number");
-	   $paid= $this->input->post("paid");
-	   $this->db->where("username",$ordernumber);
-	   $cust=$this->db->get("customers");
-	   
-	   if($cust->num_rows()>0){
-	       
-	       
-	  $dt=date("dmy",strtotime(date("y-m-d")));
-      $b_code   = $this->session->userdata("id");
-
-      $billno   = $this->db->count_all("invoice_serial");
-      $billno   = $billno + 1000;
-      $bill_no  = $dt.$b_code."I".$billno;
-      $utt=$ordernumber;
-
-  for($i=1; $i<=15;$i++)
-  {
-    if(strlen($this->input->post("item_name$i"))>0)
-    {
-    $data = array(
-        "p_code" => $this->input->post("itemid$i"),
-        "p_name" => $this->input->post("item_name$i"),
-        "pries_per_item" => $this->input->post("item_price$i"),
-        "item_quant" => $this->input->post("item_quantity$i"),
-        "sub_total" => $this->input->post("sub_total$i"),
-        "category" => $this->input->post("item_catid$i"),
-        
-        "date"=> date("Y-m-d"),
-        "bill_no" =>$bill_no,
-        "subbranch_code"=>$this->session->userdata("id")
-      );
-          $tablename='product_sale';
-         // $this->load->model("registration1");
-           $this->db->insert("product_sale",$data);
-         $var1= $this->db->insert_id();
-        // print_r($var1);
-         // exit();
-    }
-
-
-      
-
-
-     $bal = array(
-            
-             "paid" => $this->input->post("paid"),
-             "total"=> $this->input->post("total"),     
-             "date"=> date("Y-m-d"),
-              "bill_no" =>$bill_no,
-              "valid_id" => $ordernumber,
-             
-              "subbranch_code"=>$this->session->userdata("id")
-           );
-              $this->db->insert("product_saletotal",$bal);
-              
-      if($var1):
-        $invoiceData = array(
-          "invoice_no" => $bill_no,
-          "reason" => "Sale Invoice",
-          "invoice_date" => date("Y-m-d"),
-          "subbranch_id"=>$this->session->userdata("id")
-        );
-          $this->db->insert("invoice_serial",$invoiceData);
-        
-            $this->db->where("id",$var1);
-            $dt3=$this->db->get("product_sale")->row();
-            
-            $this->db->where("bill_no",$bill_no);
-            $data5=$this->db->get("product_saletotal")->row();
-            // print_r($data5);
-            // exit();
-            $p_code= $dt3->p_code;
-            $this->db->where("p_code",$p_code);
-           // $this->db->or_where("sec",$p_code);
-            $this->db->where("subbranch_id",$b_code);
-            $var=$this->db->get("subbranch_wallet");
-            
-        if($var->num_rows() > 0):
-         $row=  $var->row();
-            $q = $row->rec_quantity;
-            $totsel = $row->sale_quantity;
-          
-            $saleqn =$q - $dt3->item_quant;
-             $recqn= $totsel + $dt3->item_quant;
-             
-           
-            $data33 = array(
-              "rec_quantity" => $saleqn,
-              "sale_quantity" => $recqn
-             
-            );
-           
-           $this->db->where("p_code",$p_code);
-           $this->db->where("subbranch_id",$b_code);
-           // $this->db->or_where("sec",$p_code);
-           $var3=$this->db->update("subbranch_wallet",$data33);
-     
-                   
-        endif;
-      endif;
-	       
-  }     
-	       
-	  $pamt= $this->input->post('paid');
-         
-           $username=$this->session->userdata("username");
-           
-             $this->db->where("login_username",$username);
-          $this->db->where("opening_date",date('Y-m-d'));
-         $op1 =  $this->db->get("opening_closing_balance");
-       
-            $balance = $op1->closing_balance;
-           $close1 = $balance + $pamt;
-
-           $bal = array(
-            "closing_balance" => $close1
-          );
-          $this->db->where("login_username",$username);
-          $this->db->where("opening_date",date('Y-m-d'));
-          $this->db->update("opening_closing_balance",$bal);    
-          
-	         $daybook=array(
-           "amount" =>$pamt,
-           "pay_date"=> date("Y-m-d"),
-           "reason" =>"From sale Stock",
-           "pay_mode"=>"Cash",
-           "dabit_cradit"=>"1",
-           "closing_balance" => $close1,
-           "paid_to" =>$this->session->userdata("username"),
-           "invoice_no" => $bill_no,
-           "paid_by"=> $utt
-        
-       );
-     $dd=  $this->db->insert("day_book", $daybook);
-	    ?>   
-	        <script>
-            alert('Product Sell successfully');
-            </script>;
-            <?php  
-          
-                      $this->db->where("username",$utt);
-                      $data= $this->db->get("customers")->row();
-                     
-                      $count=0;
-                      $sender = $this->db->get("sms_setting")->row();
-                      $sende_Detail =$sender;
-                      $msg = "Dear Sir Thanks For Shopping With  Us. Your Shopping Amount is Rs - ".$this->input->post("total")." /- Thank You .";
-                      $mobileno =	$data->mobile;
-                      
-                    sms($mobileno,$msg,$sende_Detail->uname,$sende_Detail->password,$sende_Detail->sender_id);
-                      
-                     $totamt= $this->input->post("total");
-                     $prcntamt= 2;
-                     $prcnt=$totamt * $prcntamt;
-                     $totprcnt =$prcnt/100 ;
-                    $this->db->where("username",$utt);
-                      $dt2=$this->db->get("customers")->row();
-                     
-                     $this->db->where("cid",$dt2->id);
-                  $pvresult = $this->db->get("pv");
-                  if($pvresult->num_rows()>0){
-                       $pv2=$pvresult->row()->rupee; 
-                  }else{
-                       $pv2=0; 
-                  }
-                  
-                    $newpv=$pv2+$totprcnt;
-                    $pv1=array(
-                    "rupee"=>$newpv
-                    );
-                    $this->db->where("cid",$dt2->id);
-                     $uppv= $this->db->update("pv",$pv1);
-                     $msg = "Dear Sir Thanks For Shopping With  Us. Your CashBack Amount is Rs - ".$totprcnt." /- Thank You .";
-                      $mobileno =$data->mobile;
-                      
-                     sms($mobileno,$msg,$sende_Detail->uname,$sende_Detail->password,$sende_Detail->sender_id);
-                
-                       //$id=$dt->parentID;
-                     ////$this->db->where("id",$id);
-                     //  $parentdt=$this->db->get("customers")->row();
-                    //$cid=$parentdt->username;
-
-                     
-                    $i=1;
-                
-                   $data3= $this->shop->commision($i,$utt,$totamt,$bill_no);
-                   
-                   if($data3){ ?>
-                       <script>
-                           window.location.href="<?php echo base_url();?>shopController/saleInvoice/<?php echo $bill_no;?>";
-                       </script>
-                        <!--redirect('shopController/saleInvoice/'.$bill_no);-->
-                  <?php  }
-	       
-	       
-	   }else{
-	       
-	       
-	       
-	       //   $this->db->where("order_no",$ordernumber);
-	       $this->db->where('order_no',$ordernumber);
-            $dt= $this->db->get("order_serial");
-      
-//   print_r($dt);
-//   exit();
-  if($dt->num_rows()>0){
-     $data= $dt->row();
-
-    //   $orderno = array(
-    //       "order_no" =>$this->input->post("orderno"),
-    //         "sub_branchid" => $this->session->userdata("id")
-    //       );
-      
-    //   $dt=$this->db->insert("shopbill",$orderno);
-    
-      
-      $i=1;
-      while( $i<= $number )
-     { 
-        
-    if(strlen($this->input->post("item_name".$i))>0)
-     {
-     
-    $data2 = array(
-        "p_code" => $this->input->post("itemid".$i),
-        //"p_name" => $this->input->post("item_name".$i),
-        "price" => $this->input->post("item_price$i"),
-        "quantity" => $this->input->post("item_quantity$i"),
-        "subtotal" => $this->input->post("sub_total$i"),
-        "order_no" =>$ordernumber,
-        "sub_branchid" => $this->session->userdata("id"),
-        
-        "date"=> date("Y-m-d"),
-        "cust_id"=>$data->cust_id
-        
-      );
-          
-         
-          $var1= $this->db->insert("shopbill",$data2);
-           print_r($var1);
-     // exit();
-  } 
-    $i++; }
-   // exit;
-   $this->db->where("order_no",$ordernumber);
-   $var=$this->db->get("shopbill");
-        if($var->num_rows() > 0){
-            
-           foreach($var->result() as $row):
-            $q = $row->quantity;
-          //  $totsel = $row->sale_quantity;
-            $bid= $this->session->userdata("id");
-            $this->db->where("p_code",$row->p_code);
-            $this->db->where("subbranch_id",$bid);
-            $subdt=$this->db->get("subbranch_wallet");
-            if($subdt->num_rows()>0){
-               $subbranchdata= $subdt->row();
-            $squan = $subbranchdata->sale_quantity;
-            $rquan = $subbranchdata->rec_quantity;
-        
-                 
-            $data1 = array(
-              "rec_quantity" => ($rquan - $q),
-              "sale_quantity" => ($squan + $q),
-              "date" =>  date("y-m-d")
-            );
-           
-           $this->db->where("p_code",$row->p_code);
-            $this->db->where("subbranch_id",$bid);
-           $var=$this->db->update("subbranch_wallet",$data1);
-            }
-     endforeach;
-     if($var){
-         ?>
-         <script>alert("product fill succussfully");
-         window.location.href="<?php echo base_url();?>shopController/invoice/<?php echo $ordernumber;?>";
-         </script>
-       <?php  
-     }
-    // redirect("shopController/invoice/".$ordernumber,"refresh"); 
-}
-
-}else{
-    echo "You Have entered Wrong OrderNumber ";
-}
-	       
-	       
-	       
-	       
-	       
-	   }
-	    
 	}
 
 	function addsubCategory(){
@@ -784,7 +482,8 @@
 			if($this->session->userdata('login_type')==2){
 			//	$this->db->select("p_code");
 				$this->db->where("branch_id",$this->session->userdata("id"));
-				$data['product_id']  =$this->db->get("branch_wallet");
+                $data['product_id']  =$this->db->get("branch_wallet");
+                // print_r($data); exit;
 				
 			}else{
 				if($this->session->userdata('login_type')==4){
@@ -860,17 +559,16 @@
      public	function checkStock(){
 
 		//$msg = '<div class="alert alert-info"><button data-dismiss="alert" class="close">&times;</button><strong><h3>New Item Entry :)</h3> </strong></div>';
-    $itemNo = str_replace(' ','',$this->input->post("name"));
+    $itemNo = $this->input->post("name");
     
   
    
 	//$this->load->model("Producttransfer");
-
     $var = $this->stock->checkStockp($itemNo);
 		if($var->num_rows() > 0){
 		    $row=$var->row();
-		  //   print_r($row);
-		  //     exit();
+		     //print_r($row);
+		      // exit();
 	$this->db->where("sec",$row->sec);
    // $this->db->or_where("sec",$row->sec);
     $req = $this->db->get("stock_products")->row();
@@ -883,7 +581,6 @@
 			
                 $cat=$dt->row();
 				$itemData = array(
-				    "itemid" =>$req->id,
 						"itemName" =>$req->name,
                          "itemCat" =>$cat->name,
                          "itemCatid" =>$cat->id,
@@ -1311,24 +1008,44 @@ public function edit(){
     
     
    }	
-           public function productinvoice(){
-       	    $data['pageTitle'] = 'Product Transfer Invoice';
-    		$data['smallTitle'] = 'Product Transfer Invoice';
-    		$data['mainPage'] = 'Product Transfer Invoice';
-    		$data['subPage'] = 'Product Transfer Invoice';
-    		$data['title'] = 'Product Transfer Invoice';
-    		$data['headerCss'] = 'headerCss/sublistCss';
-    		$data['footerJs'] = 'footerJs/sublistJs';
-    		$data['mainContent'] = 'Shop/productinvoice';
-    		$this->load->view("includes/mainContent", $data);
-       
-   }
+    public function productinvoice()
+    {
+        $data['pageTitle'] = 'Product Transfer Invoice';
+        $data['smallTitle'] = 'Product Transfer Invoice';
+        $data['mainPage'] = 'Product Transfer Invoice';
+        $data['subPage'] = 'Product Transfer Invoice';
+        $data['title'] = 'Product Transfer Invoice';
+        $data['headerCss'] = 'headerCss/sublistCss';
+        $data['footerJs'] = 'footerJs/sublistJs';
+        $data['mainContent'] = 'Shop/productinvoice';
+        $this->load->view("includes/mainContent", $data);
+    }
+   public function productinvoice_chk()
+    {
+        $data['pageTitle'] = 'Product Transfer Invoice';
+        $data['smallTitle'] = 'Product Transfer Invoice';
+        $data['mainPage'] = 'Product Transfer Invoice';
+        $data['subPage'] = 'Product Transfer Invoice';
+        $data['title'] = 'Product Transfer Invoice';
+        $data['headerCss'] = 'headerCss/sublistCss';
+        $data['footerJs'] = 'footerJs/sublistJs';
+        $data['mainContent'] = 'Shop/productinvoice_chk';
+        $this->load->view("includes/mainContent", $data);
+    }
    
     public function genrateproductinvoice(){
           
            $data['invoice'] =$this->uri->segment(3);
           $data['title'] = 'Transfer Products Invoice';    
           $this->load->view("Shop/generateproductinvoicedetail", $data);
+
+          }
+          public function genrateproductinvoice_chk(){
+          
+           $data['invoice'] =$this->uri->segment(3);
+           $data['username'] =$this->uri->segment(4);
+          $data['title'] = 'Transfer Products Invoice';    
+          $this->load->view("Shop/generateproductinvoicedetail_chk", $data);
 
           }
    
@@ -1342,7 +1059,107 @@ public function edit(){
             $ptdt = $pr_dt->row();
            if($this->session->userdata('login_type')==1)
            {
-               
+                $this->db->where('id',$ptdt->p_code);
+                $chk = $this->db->get('stock_products');
+                if($chk->num_rows()>0)
+                {
+                    $up_qt = $chk->row()->quantity + $ptdt->quantity;
+                    $val_a = array('quantity'=>$up_qt);
+                    $this->db->where('id',$ptdt->p_code);
+                    $chk_a = $this->db->update('stock_products',$val_a);
+                    if($chk_a)
+                    {
+                        $this->db->where('username',$ptdt->sender_usernm);
+                        $sub_b = $this->db->get('sub_branch');
+                        if($sub_b->num_rows()>0)
+                        {
+                            $this->db->where('subbranch_id',$sub_b->row()->id);
+                            $this->db->where('p_code',$ptdt->p_code);
+                            $sub_bwallet = $this->db->get('subbranch_wallet')->row();
+                            //  print_r( $sub_bwallet); exit;
+                            $rmain_qt = $sub_bwallet->rec_quantity - $ptdt->quantity;
+                            $valb = array('rec_quantity'=>$rmain_qt);
+                            $this->db->where('subbranch_id',$sub_b->row()->id);
+                            $this->db->where('p_code',$ptdt->p_code);
+                            $qt_up = $this->db->update('subbranch_wallet',$valb);
+                            if($qt_up)
+                            { 
+                                            $arr_a=array("status"=>1);
+                                            $this->db->where('id',$pro_t_id);
+                                            $upp_dt = $this->db->update('product_trans_detail',$arr_a);
+                                            if($upp_dt){        ?>
+                                <script>
+                                    alert("Recieved Successfully.");
+                                    window.location.href="<?php echo base_url();?>shopController/recieveproductlist";
+                                </script>
+                            <?php } 
+                            }
+                            else
+                            {
+                                echo "Quantity not less in sender stock";
+                            }
+                        }
+                        else
+                        {
+                            $this->db->where('username',$ptdt->sender_usernm);
+                            $b_b = $this->db->get('branch');
+                            if($b_b->num_rows()>0)
+                            {
+                                $this->db->where('branch_id',$b_b->row()->id);
+                                $this->db->where('p_code',$ptdt->p_code);
+                                $sub_bwallet = $this->db->get('branch_wallet')->row();
+                                //  print_r( $sub_bwallet); exit;
+                                $rmain_qt = $sub_bwallet->rec_quantity - $ptdt->quantity;
+                                $valb = array('rec_quantity'=>$rmain_qt);
+                                $this->db->where('branch_id',$b_b->row()->id);
+                                $this->db->where('p_code',$ptdt->p_code);
+                                $qt_up = $this->db->update('branch_wallet',$valb);
+                                if($qt_up)
+                                { 
+                                                $arr_a=array("status"=>1);
+                                                $this->db->where('id',$pro_t_id);
+                                                $upp_dt = $this->db->update('product_trans_detail',$arr_a);
+                                                if($upp_dt){        ?>
+                                    <script>
+                                        alert("Recieved Successfully.");
+                                        window.location.href="<?php echo base_url();?>shopController/recieveproductlist";
+                                    </script>
+                                <?php } 
+                                }
+                                else
+                                {
+                                    // echo "Quantity not less in sender stock";
+                                    ?>
+                                    <script>
+                                        alert("Quantity not less in sender stock.");
+                                        window.location.href="<?php echo base_url();?>shopController/recieveproductlist";
+                                    </script>
+                                <?php
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // echo "product not found";
+                        ?>
+                        <script>
+                            alert("product not found");
+                            window.location.href="<?php echo base_url();?>shopController/recieveproductlist";
+                        </script>
+                    <?php
+                    }
+                }
+                else
+                {
+                    // echo "product not found...";
+                    ?>
+                    <script>
+                        alert("product not found....");
+                        window.location.href="<?php echo base_url();?>shopController/recieveproductlist";
+                    </script>
+                <?php
+                }
            }
            elseif($this->session->userdata('login_type')==2)
            {
@@ -1364,14 +1181,14 @@ public function edit(){
                           $sub_b = $this->db->get('sub_branch');
                           if($sub_b->num_rows()>0)
                           {
-                            $this->db->where('sub_branchid',$sub_b->row()->id);
+                            $this->db->where('subbranch_id',$sub_b->row()->id);
                             $this->db->where('p_code',$ptdt->p_code);
                             $sub_bwallet = $this->db->get('subbranch_wallet')->row();
                             
                             $rmain_qt = $sub_bwallet->rec_quantity - $ptdt->quantity;
                             
                             $valb = array('rec_quantity'=>$rmain_qt);
-                            $this->db->where('sub_branchid',$sub_b->row()->id);
+                            $this->db->where('subbranch_id',$sub_b->row()->id);
                             $this->db->where('p_code',$ptdt->p_code);
                             $qt_up = $this->db->update('subbranch_wallet',$valb);
                             if($qt_up)
@@ -1447,14 +1264,14 @@ public function edit(){
                           $sub_b = $this->db->get('sub_branch');
                           if($sub_b->num_rows()>0)
                           {
-                            $this->db->where('sub_branchid',$sub_b->row()->id);
+                            $this->db->where('subbranch_id',$sub_b->row()->id);
                             $this->db->where('p_code',$ptdt->p_code);
                             $sub_bwallet = $this->db->get('subbranch_wallet')->row();
                             
                             $rmain_qt = $sub_bwallet->rec_quantity - $ptdt->quantity;
                             
                             $valb = array('rec_quantity'=>$rmain_qt);
-                            $this->db->where('sub_branchid',$sub_b->row()->id);
+                            $this->db->where('subbranch_id',$sub_b->row()->id);
                             $this->db->where('p_code',$ptdt->p_code);
                             $qt_up = $this->db->update('subbranch_wallet',$valb);
                             if($qt_up)
@@ -1531,7 +1348,7 @@ public function edit(){
                       $chk = $this->db->update('subbranch_wallet',$val_a);
                       if($chk)
                       {
-                           $this->db->where('username',$ptdt->sender_usernm);
+                            $this->db->where('username',$ptdt->sender_usernm);
                           $br_d = $this->db->get('branch');
                           if($br_d->num_rows()>0)
                             {
@@ -1563,7 +1380,7 @@ public function edit(){
                                     {
                                         echo "Quantity not less in sender stock";
                                     }
-                            }
+                                }
                             else
                             {
                                 $this->db->where('admin_username',$ptdt->sender_usernm);
